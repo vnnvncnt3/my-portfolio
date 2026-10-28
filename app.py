@@ -281,8 +281,23 @@ def main():
         if shown.empty:
             st.info("No skills match these filters. Lower the minimum rating or pick another category.")
         else:
-            for _, row in shown.iterrows():
-                st.progress(int(row["Level"]), text=f"{row['Skill']}  ({row['Level']}/100)")
+            st.vega_lite_chart(
+                shown,
+                {
+                    "mark": {"type": "bar", "color": "#D4A24C"},
+                    "height": {"step": 30},
+                    "padding": {"left": 12, "right": 12, "top": 5, "bottom": 5},
+                    "encoding": {
+                        "x": {"field": "Level", "type": "quantitative",
+                              "scale": {"domain": [0, 100]}},
+                        "y": {"field": "Skill", "type": "nominal", "sort": "-x",
+                              "title": None,
+                              "axis": {"labelLimit": 300, "labelOverlap": False,
+                                       "minExtent": 150, "labelPadding": 8}},
+                    },
+                },
+                width="stretch",
+            )
 
         if show_table and not shown.empty:
             st.table(shown[["Skill", "Category", "Level"]].set_index("Skill"))
